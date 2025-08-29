@@ -40,6 +40,15 @@ class Login extends Component
             ]);
         }
 
+        // ✅ Cek role setelah login
+        if (Auth::user()->role !== 'admin') {
+            Auth::logout();
+            RateLimiter::clear($this->throttleKey());
+            throw ValidationException::withMessages([
+                'email' => 'Akses ditolak. Hanya admin yang bisa login.',
+            ]);
+        }
+
         RateLimiter::clear($this->throttleKey());
         Session::regenerate();
 
