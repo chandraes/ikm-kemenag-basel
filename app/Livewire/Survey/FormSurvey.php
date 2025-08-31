@@ -11,6 +11,7 @@ use Livewire\Component;
 use Livewire\Attributes\Session;
 use Jantinnerezo\LivewireAlert\Facades\LivewireAlert;
 use Illuminate\Validation\ValidationException;
+use App\Events\SurveySubmitted;
 
 class FormSurvey extends Component
 {
@@ -159,6 +160,8 @@ class FormSurvey extends Component
             });
 
             $this->langkah = 3;
+
+            broadcast(new SurveySubmitted())->toOthers();
 
         } catch (\Exception $e) {
             LivewireAlert::title('Terjadi Kesalahan')->text('Gagal menyimpan survei, silakan coba lagi.')->error()->show();

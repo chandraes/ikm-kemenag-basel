@@ -13,6 +13,7 @@
     </main>
     @livewireScripts
     @fluxScripts
+    @stack('scripts')
     {{-- <x-livewire-alert::scripts /> --}}
 </body>
 </html>

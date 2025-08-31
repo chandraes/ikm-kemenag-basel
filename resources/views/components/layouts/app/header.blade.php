@@ -117,6 +117,7 @@
 
     @fluxScripts
     <x-livewire-alert::scripts />
+   
 </body>
 
 </html>

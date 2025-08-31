@@ -7,6 +7,7 @@
     },
     "dependencies": {
         "@tailwindcss/vite": "^4.1.11",
+        "apexcharts": "^5.3.4",
         "autoprefixer": "^10.4.20",
         "axios": "^1.7.4",
         "concurrently": "^9.0.1",
@@ -19,5 +20,10 @@
         "@rollup/rollup-linux-x64-gnu": "4.9.5",
         "@tailwindcss/oxide-linux-x64-gnu": "^4.0.1",
         "lightningcss-linux-x64-gnu": "^1.29.1"
+    },
+    "devDependencies": {
+        "animejs": "^4.1.3",
+        "laravel-echo": "^2.2.0",
+        "pusher-js": "^8.4.0"
     }
 }
