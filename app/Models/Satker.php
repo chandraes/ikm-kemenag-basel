@@ -7,4 +7,14 @@ use Illuminate\Database\Eloquent\Model;
 class Satker extends Model
 {
     protected $fillable = ['nama_satker'];
+
+    public function jawabanSurveys()
+    {
+        return $this->hasMany(JawabanSurvey::class);
+    }
+
+    public function jawabanItems()
+    {
+        return $this->hasMany(JawabanItem::class);
+    }
 }
