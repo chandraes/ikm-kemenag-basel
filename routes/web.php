@@ -7,6 +7,10 @@ use Illuminate\Support\Facades\Route;
 use App\Livewire\LandingPage;
 use App\Livewire\FullscreenDashboard;
 use App\Livewire\Settings\PengaturanAplikasi;
+use App\Livewire\Admin\Dashboard\Index as AdminDashboard;
+use App\Livewire\Admin\Dashboard\SurveyDetail;
+use App\Livewire\Responden;
+use App\Livewire\Admin\Reviews\Index as ReviewsPage;
 
 
 Route::get('/', LandingPage::class)->name('landing');
@@ -14,11 +18,15 @@ Route::get('/tv', FullscreenDashboard::class)->name('landing.full-screen');
 
 Route::get('survey', \App\Livewire\Survey\FormSurvey::class)->name('survey.form');
 
-Route::view('dashboard', 'dashboard')
-    ->middleware(['auth', 'verified'])
+Route::get('/dashboard', AdminDashboard::class)
+    ->middleware(['auth', 'verified']) // Gunakan middleware yang sama seperti sebelumnya
     ->name('dashboard');
 
 Route::middleware(['auth'])->group(function () {
+    Route::get('/surveys/{jawabanSurvey}', SurveyDetail::class)->name('admin.surveys.show');
+    Route::get('/admin/reviews', ReviewsPage::class)->name('admin.reviews.index');
+
+    Route::get('/responden', Responden::class)->name('admin.responden');
     Route::redirect('settings', 'settings/profile');
 
     Route::get('settings/profile', Profile::class)->name('settings.profile');

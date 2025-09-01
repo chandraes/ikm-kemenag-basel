@@ -1,7 +1,8 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="light">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
     <head>
         @include('partials.head')
+
     </head>
     <body class="min-h-screen bg-white dark:bg-zinc-800">
         <flux:sidebar sticky stashable class="border-e border-zinc-200 bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900">
@@ -14,6 +15,8 @@
             <flux:navlist variant="outline">
                 <flux:navlist.group :heading="__('Platform')" class="grid">
                     <flux:navlist.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>{{ __('Dashboard') }}</flux:navlist.item>
+                    <flux:navlist.item icon="user-group" :href="route('admin.responden')" :current="request()->routeIs('admin.responden')" wire:navigate>{{ __('Responden') }}</flux:navlist.item>
+                    <flux:navlist.item icon="envelope" :href="route('admin.reviews.index')" :current="request()->routeIs('admin.reviews.index')" wire:navigate>{{ __('Kritik & Saran') }}</flux:navlist.item>
                 </flux:navlist.group>
                  <flux:navlist.group :heading="__('Master Data')" class="grid">
                     <flux:navlist.item icon="building-office-2" :href="route('master.satker')" :current="request()->routeIs('master.satker')" wire:navigate>{{ __('Satker') }}</flux:navlist.item>
@@ -123,5 +126,6 @@
         {{ $slot }}
 
         @fluxScripts
+        @stack('scripts')
     </body>
 </html>

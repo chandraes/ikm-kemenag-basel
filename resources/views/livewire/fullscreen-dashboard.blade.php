@@ -24,7 +24,7 @@
             {{-- PANEL KIRI ATAS: Ringkasan Utama --}}
             <div class="lg:col-span-1 bg-white dark:bg-gray-800 p-4 rounded-xl shadow-lg flex flex-col h-full"
                 wire:key="summary-card">
-                <div x-data="gaugeChart" x-init='initChart(@json($dataGauge))' wire:key="gauge-chart-{{ $periode }}">
+                <div x-data="tvGaugeChart" x-init='initChart(@json($dataGauge))' wire:key="gauge-chart-{{ $periode }}">
                     <h3 class="font-bold text-lg text-center text-gray-700 dark:text-gray-200">Skor IKM Keseluruhan</h3>
                     <div x-ref="gauge"></div>
                 </div>
@@ -55,7 +55,7 @@
 
             {{-- PANEL KANAN ATAS: Grafik Batang --}}
             <div class="lg:col-span-2 bg-white dark:bg-gray-800 p-4 rounded-xl shadow-lg flex flex-col h-full"
-                x-data="barChart" x-init='initChart(@json($dataBarChart))'
+                x-data="tvBarChart" x-init='initChart(@json($dataBarChart))'
                 wire:key="bar-chart-{{ $periode }}-{{ $sortBy }}-{{ $sortDirection }}">
                 <h3 class="font-bold text-lg mb-2 text-gray-700 dark:text-gray-200 flex-shrink-0">Peringkat Kepuasan per
                     Unit Layanan</h3>
@@ -73,7 +73,7 @@
                     <h3 class="font-bold text-lg text-gray-700 dark:text-gray-200">Kritik & Saran Terbaru</h3>
                 </div>
                 {{-- Kontainer scrollable dengan komponen autoScroller yang sama --}}
-                <div class="flex-grow overflow-y-auto p-4" x-data="autoScroller" x-init="init($el)">
+                <div class="flex-grow overflow-y-auto p-4" x-data="tvAutoScroller" x-init="init($el)">
                     <div class="space-y-4">
                         @forelse ($ulasanTerbaru as $ulasan)
                         <div class="bg-gray-50 dark:bg-gray-700/50 p-3 rounded-lg shadow-sm">
@@ -100,7 +100,7 @@
                 <div class="p-4 flex-shrink-0 border-b border-gray-200 dark:border-gray-700">
                     <h3 class="font-bold text-lg text-gray-700 dark:text-gray-200">Detail Kinerja per Unit Layanan</h3>
                 </div>
-                <div class="flex-grow overflow-y-auto" x-data="autoScroller" x-init="init($el)">
+                <div class="flex-grow overflow-y-auto" x-data="tvAutoScroller" x-init="init($el)">
                     <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                         <thead class="bg-gray-50 dark:bg-gray-700 sticky top-0 z-10">
                             <tr>
@@ -191,154 +191,3 @@
 
     </div>
 </div>
-
-@push('scripts')
-<script>
-    function getGradientColor(value, min = 0, max = 100) {
-    const percentage = Math.max(0, Math.min(1, (value - min) / (max - min)));
-    const startColor = { r: 239, g: 68, b: 68 };
-    const midColor = { r: 251, g: 191, b: 36 };
-    const endColor = { r: 34, g: 197, b: 94 };
-    let r, g, b;
-    if (percentage < 0.5) {
-        const p = percentage * 2;
-        r = startColor.r + p * (midColor.r - startColor.r);
-        g = startColor.g + p * (midColor.g - startColor.g);
-        b = startColor.b + p * (midColor.b - startColor.b);
-    } else {
-        const p = (percentage - 0.5) * 2;
-        r = midColor.r + p * (endColor.r - midColor.r);
-        g = midColor.g + p * (endColor.g - midColor.g);
-        b = midColor.b + p * (endColor.b - midColor.b);
-    }
-    return `rgb(${Math.round(r)}, ${Math.round(g)}, ${Math.round(b)})`;
-}
-
-document.addEventListener('alpine:init', () => {
-    Alpine.data('gaugeChart', () => ({
-        chart: null,
-        initChart(data) {
-            const isDarkMode = document.documentElement.classList.contains('dark');
-            const options = {
-                chart: { type: 'radialBar', height: '100%' },
-                series: data.series,
-                plotOptions: {
-                    radialBar: {
-                        hollow: { size: '65%' },
-                        dataLabels: {
-                            name: {
-                                show: true,
-                                fontSize: '14px',
-                                color: isDarkMode ? '#e5e7eb' : '#4b5563',
-                                offsetY: -10
-                            },
-                            value: {
-                                show: true,
-                                fontSize: '22px',
-                                fontWeight: 'bold',
-                                offsetY: 5,
-                                color: isDarkMode ? '#e5e7eb' : '#1f2937'
-                            },
-                        },
-                    },
-                },
-                colors: ['#22c55e'],
-                labels: ['IKM Instansi'],
-            }
-            this.chart = new ApexCharts(this.$refs.gauge, options);
-            this.chart.render();
-        }
-    }));
-
-    Alpine.data('barChart', () => ({
-        chart: null,
-        initChart(data) {
-            const isDarkMode = document.documentElement.classList.contains('dark');
-            const scores = data.series[0].data;
-            const barColors = scores.map(score => getGradientColor(score));
-
-            const options = {
-                chart: { type: 'bar', height: '100%' },
-                series: data.series,
-                xaxis: {
-                    categories: data.categories,
-                    labels: {
-                        style: { colors: isDarkMode ? '#e5e7eb' : '#4b5563' }
-                    }
-                },
-                yaxis: {
-                    labels: {
-                        style: { colors: isDarkMode ? '#e5e7eb' : '#4b5563' }
-                    }
-                },
-                plotOptions: {
-                    bar: {
-                        horizontal: true,
-                        borderRadius: 4,
-                        distributed: true,
-                    }
-                },
-                dataLabels: {
-                    enabled: true,
-                    offsetX: 10,
-                    style: {
-                        fontSize: '12px',
-                        fontWeight: 'bold',
-                        colors: ['#1f2937']
-                    },
-                    formatter: function (val) {
-                        return val.toFixed(2);
-                    }
-                },
-                legend: { show: false },
-                colors: barColors,
-            }
-            this.chart = new ApexCharts(this.$refs.bar, options);
-            this.chart.render();
-        }
-    }));
-
-    Alpine.data('autoScroller', () => ({
-        intervalId: null,
-        isPaused: false,
-
-        init(container) {
-            // Jeda saat kursor diarahkan ke tabel
-            container.addEventListener('mouseenter', () => this.isPaused = true);
-            container.addEventListener('mouseleave', () => this.isPaused = false);
-
-            this.intervalId = setInterval(() => {
-                // Jangan scroll jika sedang dijeda atau jika kontennya tidak perlu di-scroll
-                if (this.isPaused || container.scrollHeight <= container.clientHeight) {
-                    return;
-                }
-
-                // Cek apakah sudah sampai paling bawah
-                if (container.scrollTop + container.clientHeight >= container.scrollHeight) {
-                    this.isPaused = true;
-                    // Jeda selama 3 detik di bawah
-                    setTimeout(() => {
-                        // Kembali ke atas dengan mulus
-                        container.scrollTo({ top: 0, behavior: 'smooth' });
-                        // Tunggu animasi scroll ke atas selesai sebelum melanjutkan
-                        setTimeout(() => {
-                            this.isPaused = false;
-                        }, 1000);
-                    }, 3000);
-                } else {
-                    // Scroll ke bawah 1 piksel
-                    container.scrollTop += 1;
-                }
-            }, 50); // Kecepatan scroll (ms). Semakin kecil, semakin cepat.
-        },
-
-        // Membersihkan interval saat komponen dihancurkan
-        destroy() {
-            if (this.intervalId) {
-                clearInterval(this.intervalId);
-            }
-        }
-    }));
-});
-</script>
-@endpush
