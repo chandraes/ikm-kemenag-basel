@@ -5,10 +5,12 @@ use App\Livewire\Settings\Password;
 use App\Livewire\Settings\Profile;
 use Illuminate\Support\Facades\Route;
 use App\Livewire\LandingPage;
+use App\Livewire\FullscreenDashboard;
 use App\Livewire\Settings\PengaturanAplikasi;
 
 
 Route::get('/', LandingPage::class)->name('landing');
+Route::get('/tv', FullscreenDashboard::class)->name('landing.full-screen');
 
 Route::get('survey', \App\Livewire\Survey\FormSurvey::class)->name('survey.form');
 

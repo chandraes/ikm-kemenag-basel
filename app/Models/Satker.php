@@ -13,6 +13,9 @@ class Satker extends Model
         return $this->hasMany(JawabanSurvey::class);
     }
 
+    /**
+     * Mendefinisikan relasi "hasMany" ke model JawabanItem.
+     */
     public function jawabanItems()
     {
         return $this->hasMany(JawabanItem::class);
