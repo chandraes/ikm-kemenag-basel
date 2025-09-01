@@ -40,7 +40,7 @@ class FormSurvey extends Component
     #[Session]
     public $kritik_saran;
 
-      // =======================================================
+    // =======================================================
     // TAMBAHKAN: Properti baru dengan #[Session]
     // =======================================================
     #[Session]
@@ -64,6 +64,9 @@ class FormSurvey extends Component
     public int $langkah = 0;
     public $totalKuesioner;
 
+    public $satker; // Akan diisi otomatis oleh Livewire dari parameter route
+    public bool $isSatkerLocked = false;
+
 
     public function mount()
     {
@@ -75,6 +78,23 @@ class FormSurvey extends Component
         if (empty($this->jawaban)) {
             foreach ($this->kuesioners as $kuesioner) {
                 $this->jawaban[$kuesioner->id] = null;
+            }
+        }
+
+        if ($this->satker) {
+            // Cari data satker di database berdasarkan ID dari URL
+            $selectedSatker = \App\Models\Satker::find($this->satker);
+
+            // Jika satker ditemukan...
+            if ($selectedSatker) {
+                // ...maka TIMPA data sesi dengan data dari URL. Ini adalah langkah kunci.
+                $this->satker_id = $selectedSatker->id;
+                $this->searchSatker = $selectedSatker->nama_satker; // Isi teks input
+                $this->isSatkerLocked = true; // Kunci inputnya
+            } else {
+                // Jika ID satker di URL tidak valid, reset saja agar pengguna bisa memilih manual
+                $this->reset('satker', 'satker_id', 'searchSatker');
+                $this->isSatkerLocked = false;
             }
         }
     }
@@ -91,7 +111,7 @@ class FormSurvey extends Component
         $this->reset('satker_id', 'searchSatker');
     }
 
-     public function selectAgama($agama)
+    public function selectAgama($agama)
     {
         $this->agama = $agama;
         $this->searchAgama = $agama;
@@ -186,7 +206,6 @@ class FormSurvey extends Component
         try {
             $this->validate($rules, ['jawaban.*.required' => 'Mohon jawab semua pertanyaan sebelum melanjutkan.']);
             $this->langkah = 2;
-
         } catch (ValidationException $e) {
             $firstErrorKey = array_key_first($e->errors());
             $kuesionerId = str_replace('jawaban.', '', $firstErrorKey);
@@ -242,7 +261,6 @@ class FormSurvey extends Component
             $this->langkah = 3;
 
             broadcast(new SurveySubmitted())->toOthers();
-
         } catch (\Exception $e) {
             LivewireAlert::title('Terjadi Kesalahan')->text('Gagal menyimpan survei, silakan coba lagi.')->error()->show();
         }
@@ -251,9 +269,20 @@ class FormSurvey extends Component
     public function surveyLagi()
     {
         session()->forget([
-            'satker_id', 'jawaban', 'nama', 'email', 'usia', 'alamat_lengkap',
-            'keterangan_keperluan', 'kritik_saran', 'langkah', 'jenis_kelamin',
-            'agama', 'pendidikan', 'pekerjaan', 'pekerjaan_lainnya'
+            'satker_id',
+            'jawaban',
+            'nama',
+            'email',
+            'usia',
+            'alamat_lengkap',
+            'keterangan_keperluan',
+            'kritik_saran',
+            'langkah',
+            'jenis_kelamin',
+            'agama',
+            'pendidikan',
+            'pekerjaan',
+            'pekerjaan_lainnya'
         ]);
 
         $this->reset();
@@ -267,9 +296,9 @@ class FormSurvey extends Component
         }
     }
 
-   public function render()
+    public function render()
     {
-         $satkers = Satker::query()
+        $satkers = Satker::query()
             ->when($this->searchSatker, function ($query) {
                 $query->where('nama_satker', 'like', '%' . $this->searchSatker . '%');
             })
@@ -291,14 +320,20 @@ class FormSurvey extends Component
 
         if ($this->satker_id && empty($this->searchSatker)) {
             $selectedSatker = Satker::find($this->satker_id);
-            if($selectedSatker) {
+            if ($selectedSatker) {
                 $this->searchSatker = $selectedSatker->nama_satker;
             }
         }
 
-        if ($this->agama && empty($this->searchAgama)) { $this->searchAgama = $this->agama; }
-        if ($this->pendidikan && empty($this->searchPendidikan)) { $this->searchPendidikan = $this->pendidikan; }
-        if ($this->pekerjaan && empty($this->searchPekerjaan)) { $this->searchPekerjaan = $this->pekerjaan; }
+        if ($this->agama && empty($this->searchAgama)) {
+            $this->searchAgama = $this->agama;
+        }
+        if ($this->pendidikan && empty($this->searchPendidikan)) {
+            $this->searchPendidikan = $this->pendidikan;
+        }
+        if ($this->pekerjaan && empty($this->searchPekerjaan)) {
+            $this->searchPekerjaan = $this->pekerjaan;
+        }
 
         return view('livewire.survey.form-survey', [
             'filteredSatkers' => $satkers,

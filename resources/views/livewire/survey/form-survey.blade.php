@@ -21,10 +21,10 @@
                         <input id="search-satker" type="text" wire:model.live.debounce.300ms="searchSatker"
                             @focus="open = true" placeholder="Ketik untuk mencari nama satker..."
                             class="w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                            autocomplete="off" {{ $satker_id ? 'readonly' : '' }}>
+                            autocomplete="off" {{ $satker_id ? 'readonly' : '' }} :disabled="$isSatkerLocked">
 
                         {{-- Tombol Reset Pilihan --}}
-                        @if ($satker_id)
+                        @if ($satker_id && !$isSatkerLocked)
                         <button type="button" wire:click="resetSatker"
                             class="absolute inset-y-0 right-0 flex items-center pr-3">
                             <flux:icon name="x-mark"
@@ -33,7 +33,8 @@
                         @endif
 
                         {{-- Daftar Dropdown --}}
-                        <div x-show="open" x-transition
+                        @if (!$isSatkerLocked)
+                         <div x-show="open" x-transition
                             class="absolute z-10 w-full mt-1 bg-white dark:bg-gray-800 rounded-md shadow-lg max-h-60 overflow-auto">
                             <div wire:loading class="p-3 text-sm text-gray-500">Mencari...</div>
 
@@ -51,6 +52,8 @@
                                 @endforelse
                             </ul>
                         </div>
+                        @endif
+
                     </div>
                     @error('satker_id') <span class="text-sm text-red-500 mt-1">{{ $message }}</span> @enderror
                 </div>

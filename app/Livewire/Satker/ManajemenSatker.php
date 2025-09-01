@@ -23,6 +23,11 @@ class ManajemenSatker extends Component
 
     public int $perPage = 10;
 
+    public bool $isShareModalOpen = false;
+    public ?Satker $selectedSatkerForShare = null;
+    public string $shareableUrl = '';
+    public string $shareableText = '';
+
     // 3. Hook untuk mereset paginasi saat $perPage berubah
     public function updatingPerPage(): void
     {
@@ -133,6 +138,34 @@ class ManajemenSatker extends Component
     public function closeModal()
     {
         $this->isModalOpen = false;
+    }
+
+    public function openShareModal($satkerId)
+    {
+        $this->selectedSatkerForShare = Satker::findOrFail($satkerId);
+
+        $this->shareableUrl = route('survey.form', ['satker' => $this->selectedSatkerForShare->id]);
+
+        $this->shareableText = rawurlencode(
+            "Silakan isi Survei Kepuasan Masyarakat untuk layanan kami di " .
+                $this->selectedSatkerForShare->nama_satker . ". Partisipasi Anda sangat berarti!\n\n" .
+                $this->shareableUrl
+        );
+
+        $this->isShareModalOpen = true;
+
+        // GANTI dispatch DENGAN return $this->js()
+        // Ini akan dieksekusi di browser setelah modal ditampilkan
+        return $this->js("generateQrCode('" . $this->shareableUrl . "')");
+    }
+
+    // =======================================================
+    // TAMBAHKAN: Method baru untuk menutup modal share
+    // =======================================================
+    public function closeShareModal()
+    {
+        $this->isShareModalOpen = false;
+        $this->selectedSatkerForShare = null;
     }
 
     private function resetFields()

@@ -5,6 +5,51 @@ import Pusher from 'pusher-js';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable'; // <-- Impor fungsinya secara langsung
 
+import QRCode from 'qrcode';
+
+// GANTI FUNGSI LAMA DENGAN VERSI DEBUG INI
+window.generateQrCode = function(url) {
+    console.log("✅ 1. Fungsi generateQrCode dipanggil dengan URL:", url);
+
+    Alpine.nextTick(() => {
+        console.log("✅ 2. Alpine.nextTick berjalan, DOM seharusnya sudah siap.");
+
+        const canvas = document.getElementById('qrcode-canvas');
+        const downloadLink = document.getElementById('download-qr');
+
+        if (!canvas) {
+            console.error("❌ GAGAL: Elemen <canvas> dengan id 'qrcode-canvas' TIDAK DITEMUKAN!");
+            return;
+        }
+        if (!downloadLink) {
+            console.error("❌ GAGAL: Elemen <a> dengan id 'download-qr' TIDAK DITEMUKAN!");
+            return;
+        }
+        console.log("✅ 3. Elemen canvas dan link download BERHASIL DITEMUKAN.");
+
+        const options = {
+            errorCorrectionLevel: 'H',
+            type: 'image/png',
+            quality: 0.92,
+            margin: 1,
+            width: 256
+        };
+
+        console.log("⏳ 4. Mencoba membuat QR Code pada canvas...");
+        QRCode.toCanvas(canvas, url, options, function (error) {
+            if (error) {
+                console.error("❌ 5. GAGAL saat menjalankan QRCode.toCanvas():", error);
+                return;
+            }
+
+            console.log("✅ 5. SUKSES membuat QR Code!");
+
+            downloadLink.href = canvas.toDataURL('image/png');
+            console.log("✅ 6. Link download berhasil di-update.");
+        });
+    });
+}
+
 window.jsPDF = jsPDF;
 window.autoTable = autoTable;
 
@@ -189,3 +234,5 @@ document.addEventListener('alpine:init', () => {
         }
     }));
 });
+
+

@@ -15,7 +15,8 @@
             <div class="fixed inset-0 z-50 flex items-center justify-center overflow-auto bg-black bg-opacity-50">
                 {{-- Latar belakang & teks modal disesuaikan --}}
                 <div class="relative w-full max-w-lg p-8 mx-auto bg-white rounded-lg shadow-lg dark:bg-gray-900">
-                    <h3 class="text-xl font-bold text-gray-900 dark:text-gray-200 mb-4">{{ $satker_id ? 'Edit Satker' : 'Tambah Satker Baru' }}</h3>
+                    <h3 class="text-xl font-bold text-gray-900 dark:text-gray-200 mb-4">{{ $satker_id ? 'Edit Satker' :
+                        'Tambah Satker Baru' }}</h3>
                     <form wire:submit.prevent="triggerConfirm">
                         <div>
                             <flux:input type="text" wire:model="nama_satker" id="nama_satker"
@@ -23,13 +24,54 @@
                             @error('nama_satker') <span class="text-sm text-red-600">{{ $message }}</span> @enderror
                         </div>
                         <div class="flex justify-end mt-6 space-x-3">
-                             {{-- Tombol Batal disesuaikan --}}
+                            {{-- Tombol Batal disesuaikan --}}
                             <button type="button" wire:click="closeModal()"
                                 class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600">Batal</button>
                             <button type="submit"
                                 class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700">Simpan</button>
                         </div>
                     </form>
+                </div>
+            </div>
+            @endif
+
+            @if($isShareModalOpen && $selectedSatkerForShare)
+            <div x-data
+                class="fixed inset-0 z-50 flex items-center justify-center overflow-auto bg-black bg-opacity-50">
+                <div class="relative w-full max-w-md p-6 mx-auto bg-white rounded-lg shadow-lg dark:bg-gray-900"
+                    @click.outside="closeShareModal">
+                    <h3 class="text-xl font-bold text-gray-900 dark:text-gray-200 mb-2">Bagikan Survei</h3>
+                    <p class="text-sm text-gray-600 dark:text-gray-300 mb-4">Untuk: <span class="font-semibold">{{
+                            $selectedSatkerForShare->nama_satker }}</span></p>
+
+                    {{-- PERUBAHAN: Gunakan <canvas> sebagai target --}}
+                        <div class="flex justify-center items-center p-4 bg-white rounded-md">
+                            <canvas id="qrcode-canvas"></canvas>
+                        </div>
+
+                        <div class="mt-6 space-y-3">
+                            <a id="download-qr" href="#"
+                                download="qrcode-{{ Str::slug($selectedSatkerForShare->nama_satker) }}.png"
+                                class="w-full flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700">
+                                <flux:icon name="arrow-down-tray" class="w-5 h-5" />
+                                Unduh QR Code
+                            </a>
+                            <a href="https://wa.me/?text={{ $shareableText }}" target="_blank"
+                                class="w-full flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium text-white bg-green-500 rounded-md hover:bg-green-600">
+                                <flux:icon name="chat-bubble-left-right" class="w-5 h-5" />
+                                Bagikan ke WhatsApp
+                            </a>
+                        </div>
+
+                        <div class="mt-4 text-center">
+                            <p class="text-xs text-gray-500">Untuk Instagram/TikTok, unduh QR Code lalu bagikan sebagai
+                                gambar.</p>
+                        </div>
+
+                        <div class="flex justify-end mt-6">
+                            <button type="button" wire:click="closeShareModal()"
+                                class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600">Tutup</button>
+                        </div>
                 </div>
             </div>
             @endif
@@ -45,40 +87,53 @@
                 </div>
 
                 <div class="w-full md:w-1/3">
-                    <flux:input icon="magnifying-glass" wire:model.live.debounce.300ms="search" placeholder="Cari nama satker..."/>
+                    <flux:input icon="magnifying-glass" wire:model.live.debounce.300ms="search"
+                        placeholder="Cari nama satker..." />
                 </div>
             </div>
 
             {{-- Wrapper tabel disesuaikan --}}
-            <div class="overflow-hidden bg-white border border-gray-200 rounded-xl shadow-sm dark:bg-gray-800 dark:border-gray-700">
+            <div
+                class="overflow-hidden bg-white border border-gray-200 rounded-xl shadow-sm dark:bg-gray-800 dark:border-gray-700">
                 <div class="overflow-x-auto">
                     <table class="min-w-full">
                         {{-- Header tabel disesuaikan --}}
                         <thead class="bg-gray-50 dark:bg-gray-900/50">
                             <tr class="divide-x divide-gray-200 dark:divide-gray-700">
-                                <th class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-gray-400">No</th>
-                                <th wire:click="sortingBy('nama_satker')" class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase cursor-pointer dark:text-gray-400">
+                                <th
+                                    class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-gray-400">
+                                    No</th>
+                                <th wire:click="sortingBy('nama_satker')"
+                                    class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase cursor-pointer dark:text-gray-400">
                                     <div class="flex items-center gap-1.5">
                                         <span>Nama Satker</span>
                                         @if ($sortBy === 'nama_satker')
-                                            <flux:icon :name="$sortDirection === 'asc' ? 'chevron-up' : 'chevron-down'" class="w-4 h-4" />
+                                        <flux:icon :name="$sortDirection === 'asc' ? 'chevron-up' : 'chevron-down'"
+                                            class="w-4 h-4" />
                                         @endif
                                     </div>
                                 </th>
-                                <th class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-gray-400">Aksi</th>
+                                <th
+                                    class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-gray-400">
+                                    Aksi</th>
                             </tr>
                         </thead>
                         {{-- Body tabel disesuaikan --}}
                         <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
                             @forelse ($satkers as $satker)
-                            <tr class="text-gray-900 hover:bg-gray-50 divide-x divide-gray-200 dark:text-gray-200 dark:hover:bg-gray-900/75 dark:divide-gray-700">
+                            <tr
+                                class="text-gray-900 hover:bg-gray-50 divide-x divide-gray-200 dark:text-gray-200 dark:hover:bg-gray-900/75 dark:divide-gray-700">
                                 <td class="px-6 py-4 whitespace-nowrap">{{ $satkers->firstItem() + $loop->index }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap">{{ $satker->nama_satker }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">
+                                    {{-- PERUBAHAN: Tambahkan tombol Share --}}
+                                    <flux:button class="me-3" variant="primary" color="green"
+                                        wire:click="openShareModal({{ $satker->id }})" size="sm" icon="share">
+                                    </flux:button>
                                     <flux:button class="me-3" variant="primary" wire:click="edit({{ $satker->id }})"
                                         size="sm" icon="pencil-square"></flux:button>
-                                    <flux:button variant="danger" wire:click="confirmDelete({{ $satker->id }})" size="sm"
-                                        icon="trash"></flux:button>
+                                    <flux:button variant="danger" wire:click="confirmDelete({{ $satker->id }})"
+                                        size="sm" icon="trash"></flux:button>
                                 </td>
                             </tr>
                             @empty

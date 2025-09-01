@@ -11,12 +11,13 @@ use App\Livewire\Admin\Dashboard\Index as AdminDashboard;
 use App\Livewire\Admin\Dashboard\SurveyDetail;
 use App\Livewire\Responden;
 use App\Livewire\Admin\Reviews\Index as ReviewsPage;
+use App\Livewire\Survey\FormSurvey;
 
 
 Route::get('/', LandingPage::class)->name('landing');
 Route::get('/tv', FullscreenDashboard::class)->name('landing.full-screen');
 
-Route::get('survey', \App\Livewire\Survey\FormSurvey::class)->name('survey.form');
+Route::get('/survey/{satker?}', FormSurvey::class)->name('survey.form');
 
 Route::get('/dashboard', AdminDashboard::class)
     ->middleware(['auth', 'verified']) // Gunakan middleware yang sama seperti sebelumnya
