@@ -116,7 +116,7 @@
     {{ $slot }}
 
     @fluxScripts
-    <x-livewire-alert::scripts />
+    {{-- <x-livewire-alert::scripts /> --}}
      @stack('scripts')
 </body>
 
