@@ -4,7 +4,7 @@ import Echo from 'laravel-echo';
 import Pusher from 'pusher-js';
 
 // =======================================================
-// FUNGSI-FUNGSI GLOBAL (SEKARANG DENGAN LAZY LOADING)
+// FUNGSI-FUNGSI GLOBAL (DENGAN LAZY LOADING)
 // =======================================================
 
 window.generateQrCode = function(url) {
@@ -13,7 +13,6 @@ window.generateQrCode = function(url) {
         const downloadLink = document.getElementById('download-qr');
         if (!canvas || !downloadLink) return;
 
-        // Pustaka diimpor secara dinamis saat fungsi ini dipanggil
         import('qrcode').then(({ default: QRCode }) => {
             const options = { errorCorrectionLevel: 'H', type: 'image/png', quality: 0.92, margin: 1, width: 256 };
             QRCode.toCanvas(canvas, url, options, function (error) {
@@ -25,13 +24,11 @@ window.generateQrCode = function(url) {
 }
 
 window.generatePdf = function(data) {
-    // Pustaka jsPDF dan autoTable diimpor saat fungsi ini dipanggil
     Promise.all([
         import('jspdf'),
         import('jspdf-autotable')
     ]).then(([{ default: jsPDF }, { default: autoTable }]) => {
         const doc = new jsPDF();
-
         doc.setFontSize(18);
         doc.text('Laporan Kritik & Saran', 14, 22);
         doc.setFontSize(11);
@@ -85,10 +82,7 @@ if (import.meta.env.VITE_REVERB_APP_KEY) {
 
     window.Echo.channel('dashboard')
         .listen('SurveySubmitted', (e) => {
-            // Tampilkan di console untuk debugging
             console.log('Event SurveySubmitted diterima:', e);
-
-            // Kirim event ke semua komponen Livewire yang aktif untuk me-refresh diri
             Livewire.dispatch('refreshDashboard');
         });
 } else {
@@ -119,19 +113,22 @@ function getGradientColor(value, min = 0, max = 100) {
 }
 
 // =======================================================
-// DEFINISI KOMPONEN ALPINE.JS (DENGAN LAZY LOADING)
+// DEFINISI KOMPONEN ALPINE.JS (DENGAN LOGIKA UPDATE)
 // =======================================================
 
 document.addEventListener('alpine:init', () => {
-    // Fungsi initChart sekarang akan me-lazy-load ApexCharts
-    const chartInitLogic = (el, data, optionsCallback) => {
+    // Fungsi initChart sekarang akan me-lazy-load ApexCharts dan menyimpan instance-nya
+    const chartInitLogic = (el, data, optionsCallback, onCreated) => {
         import('apexcharts').then(({ default: ApexCharts }) => {
             const chart = new ApexCharts(el, optionsCallback(data));
             chart.render();
+            if (onCreated) onCreated(chart);
         }).catch(error => console.error('Gagal memuat ApexCharts:', error));
     };
 
+    // --- Chart untuk Dasbor Admin ---
     Alpine.data('gaugeChart', () => ({
+        chart: null,
         initChart(data) {
             const isDarkMode = document.documentElement.classList.contains('dark');
             chartInitLogic(this.$refs.gauge, data, (chartData) => ({
@@ -140,15 +137,20 @@ document.addEventListener('alpine:init', () => {
                 plotOptions: { radialBar: { hollow: { size: '70%' }, dataLabels: { name: { show: true, fontSize: '16px', color: isDarkMode ? '#e5e7eb' : '#4b5563', offsetY: -10 }, value: { show: true, fontSize: '24px', fontWeight: 'bold', offsetY: 10, color: isDarkMode ? '#e5e7eb' : '#1f2937' }, }, }, },
                 colors: ['#22c55e'],
                 labels: ['IKM Instansi'],
-            }));
+            }), (chartInstance) => this.chart = chartInstance);
+        },
+        updateChart(newData) {
+            if (this.chart && newData) {
+                this.chart.updateSeries(newData.series);
+            }
         }
     }));
 
     Alpine.data('barChart', () => ({
+        chart: null,
         initChart(data) {
             const isDarkMode = document.documentElement.classList.contains('dark');
-            const scores = data.series[0].data;
-            const barColors = scores.map(score => getGradientColor(score));
+            const barColors = data.series[0].data.map(score => getGradientColor(score));
             chartInitLogic(this.$refs.bar, data, (chartData) => ({
                 chart: { type: 'bar', height: 350 },
                 series: chartData.series,
@@ -158,11 +160,23 @@ document.addEventListener('alpine:init', () => {
                 dataLabels: { enabled: true, offsetX: 10, style: { fontSize: '12px', fontWeight: 'bold', colors: ['#1f2937'] }, formatter: function (val) { return val.toFixed(2); } },
                 legend: { show: false },
                 colors: barColors,
-            }));
+            }), (chartInstance) => this.chart = chartInstance);
+        },
+        updateChart(newData) {
+            if (this.chart && newData) {
+                const newColors = newData.series[0].data.map(score => getGradientColor(score));
+                this.chart.updateOptions({
+                    series: newData.series,
+                    xaxis: { categories: newData.categories },
+                    colors: newColors
+                });
+            }
         }
     }));
 
+    // --- Chart untuk Mode TV ---
     Alpine.data('tvGaugeChart', () => ({
+        chart: null,
         initChart(data) {
             chartInitLogic(this.$refs.gauge, data, (chartData) => ({
                 chart: { type: 'radialBar', height: '100%' },
@@ -170,14 +184,19 @@ document.addEventListener('alpine:init', () => {
                 plotOptions: { radialBar: { hollow: { size: '65%' }, dataLabels: { name: { show: true, fontSize: '14px', color: document.documentElement.classList.contains('dark') ? '#e5e7eb' : '#4b5563', offsetY: -10 }, value: { show: true, fontSize: '22px', fontWeight: 'bold', offsetY: 5, color: document.documentElement.classList.contains('dark') ? '#e5e7eb' : '#1f2937' }, }, }, },
                 colors: ['#22c55e'],
                 labels: ['IKM Instansi'],
-            }));
+            }), (chartInstance) => this.chart = chartInstance);
+        },
+        updateChart(newData) {
+            if (this.chart && newData) {
+                this.chart.updateSeries(newData.series);
+            }
         }
     }));
 
     Alpine.data('tvBarChart', () => ({
+        chart: null,
         initChart(data) {
-            const scores = data.series[0].data;
-            const barColors = scores.map(score => getGradientColor(score));
+            const barColors = data.series[0].data.map(score => getGradientColor(score));
             chartInitLogic(this.$refs.bar, data, (chartData) => ({
                 chart: { type: 'bar', height: '100%' },
                 series: chartData.series,
@@ -187,10 +206,21 @@ document.addEventListener('alpine:init', () => {
                 dataLabels: { enabled: true, offsetX: 10, style: { fontSize: '12px', fontWeight: 'bold', colors: ['#1f2937'] }, formatter: function (val) { return val.toFixed(2); } },
                 legend: { show: false },
                 colors: barColors,
-            }));
+            }), (chartInstance) => this.chart = chartInstance);
+        },
+        updateChart(newData) {
+            if (this.chart && newData) {
+                const newColors = newData.series[0].data.map(score => getGradientColor(score));
+                this.chart.updateOptions({
+                    series: newData.series,
+                    xaxis: { categories: newData.categories },
+                    colors: newColors
+                });
+            }
         }
     }));
 
+    // --- Lainnya ---
     Alpine.data('tvAutoScroller', () => ({
         intervalId: null,
         isPaused: false,

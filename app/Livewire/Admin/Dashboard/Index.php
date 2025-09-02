@@ -91,6 +91,8 @@ class Index extends Component
             'categories' => $sortedForChart->pluck('nama_satker')->toArray()
         ];
 
+        $this->dispatch('chart-data-updated', barData: $dataBarChart, gaugeData: $dataGauge);
+
         return view('livewire.admin.dashboard.index', [
             'totalResponden' => $totalResponden,
             'ikmNasional' => $ikmNasional,

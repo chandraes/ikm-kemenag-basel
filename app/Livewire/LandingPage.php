@@ -73,6 +73,8 @@ class LandingPage extends Component
             'categories' => $sortedForChart->pluck('nama_satker')->toArray()
         ];
 
+        $this->dispatch('chart-data-updated', barData: $dataBarChart, gaugeData: $dataGauge);
+
         return view('livewire.landing-page', [
             'totalResponden' => $totalResponden,
             'ikmNasional' => $ikmNasional,

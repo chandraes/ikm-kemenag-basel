@@ -95,6 +95,8 @@ class FullscreenDashboard extends Component
             ->take(15)
             ->get();
 
+        $this->dispatch('chart-data-updated', barData: $dataBarChart, gaugeData: $dataGauge);
+
         return view('livewire.fullscreen-dashboard', [
             'totalResponden' => $totalResponden,
             'ikmNasional' => $ikmNasional,

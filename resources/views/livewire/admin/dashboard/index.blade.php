@@ -42,7 +42,7 @@
                             {{-- Kartu Ringkasan Gabungan (1/3) --}}
                             <div
                                 class="lg:col-span-1 bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg flex flex-col gap-4">
-                                <div x-data="gaugeChart" x-init='initChart(@json($dataGauge))'
+                                <div x-data="gaugeChart" x-init='initChart(@json($dataGauge))' @chart-data-updated.window="updateChart($event.detail.gaugeData)"
                                     wire:key="gauge-chart-{{ $periode }}">
                                     <h3 class="font-bold text-lg text-center text-gray-700 dark:text-gray-200">Skor IKM
                                         Keseluruhan</h3>
@@ -75,7 +75,7 @@
 
                             {{-- Grafik Batang Peringkat Satker (2/3) --}}
                             <div class="lg:col-span-2 bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg"
-                                x-data="barChart" x-init='initChart(@json($dataBarChart))'
+                                x-data="barChart" x-init='initChart(@json($dataBarChart))' @chart-data-updated.window="updateChart($event.detail.barData)"
                                 wire:key="bar-chart-{{ $periode }}-{{ now() }}">
                                 <h3 class="font-bold text-lg mb-4 text-gray-700 dark:text-gray-200">Peringkat Kepuasan
                                     per Unit Layanan</h3>

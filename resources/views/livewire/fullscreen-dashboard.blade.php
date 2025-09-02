@@ -24,7 +24,7 @@
             {{-- PANEL KIRI ATAS: Ringkasan Utama --}}
             <div class="lg:col-span-1 bg-white dark:bg-gray-800 p-4 rounded-xl shadow-lg flex flex-col h-full"
                 wire:key="summary-card">
-                <div x-data="tvGaugeChart" x-init='initChart(@json($dataGauge))' wire:key="gauge-chart-{{ $periode }}">
+                <div x-data="tvGaugeChart" x-init='initChart(@json($dataGauge))' @chart-data-updated.window="updateChart($event.detail.gaugeData)" wire:key="gauge-chart-{{ $periode }}">
                     <h3 class="font-bold text-lg text-center text-gray-700 dark:text-gray-200">Skor IKM Keseluruhan</h3>
                     <div x-ref="gauge"></div>
                 </div>
@@ -55,7 +55,7 @@
 
             {{-- PANEL KANAN ATAS: Grafik Batang --}}
             <div class="lg:col-span-2 bg-white dark:bg-gray-800 p-4 rounded-xl shadow-lg flex flex-col h-full"
-                x-data="tvBarChart" x-init='initChart(@json($dataBarChart))'
+                x-data="tvBarChart" x-init='initChart(@json($dataBarChart))' @chart-data-updated.window="updateChart($event.detail.barData)"
                 wire:key="bar-chart-{{ $periode }}-{{ $sortBy }}-{{ $sortDirection }}">
                 <h3 class="font-bold text-lg mb-2 text-gray-700 dark:text-gray-200 flex-shrink-0">Peringkat Kepuasan per
                     Unit Layanan</h3>
