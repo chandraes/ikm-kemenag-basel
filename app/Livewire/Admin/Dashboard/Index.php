@@ -7,10 +7,12 @@ use App\Models\JawabanSurvey;
 use App\Models\Satker;
 use Livewire\Component;
 use Livewire\Attributes\On;
+use Livewire\Features\SupportJs\JS;
 
 class Index extends Component
 {
     public string $periode = 'all';
+    public bool $isShareModalOpen = false;
 
     #[On('echo:dashboard,SurveySubmitted')]
     public function refreshDashboard()
@@ -27,6 +29,22 @@ class Index extends Component
             '1y' => now()->subYear(),
             default => null,
         };
+    }
+
+    public function openShareModal()
+    {
+        $this->isShareModalOpen = true;
+
+        // Siapkan URL global
+        $globalUrl = route('survey.form');
+
+        // Langsung panggil fungsi JS untuk membuat QR Code
+        return $this->js("generateQrCode('" . $globalUrl . "')");
+    }
+
+    public function closeShareModal()
+    {
+        $this->isShareModalOpen = false;
     }
 
     public function render()
@@ -57,8 +75,8 @@ class Index extends Component
 
         // Query data mentah untuk chart
         $hasilPerSatker = Satker::query()
-            ->withAvg(['jawabanItems' => function($query) {
-                 $query->when($this->periode !== 'all', function ($q) {
+            ->withAvg(['jawabanItems' => function ($query) {
+                $query->when($this->periode !== 'all', function ($q) {
                     $q->where('created_at', '>=', $this->getStartDate());
                 });
             }], 'jawaban_nilai')
@@ -69,7 +87,7 @@ class Index extends Component
 
         $dataGauge = ['series' => [$ikmScoreForChart]];
         $dataBarChart = [
-            'series' => [['name' => 'Skor IKM', 'data' => $sortedForChart->pluck('jawaban_items_avg_jawaban_nilai')->map(fn($val) => $val ? (float)number_format($val*25, 2, '.', '') : 0)->toArray()]],
+            'series' => [['name' => 'Skor IKM', 'data' => $sortedForChart->pluck('jawaban_items_avg_jawaban_nilai')->map(fn($val) => $val ? (float)number_format($val * 25, 2, '.', '') : 0)->toArray()]],
             'categories' => $sortedForChart->pluck('nama_satker')->toArray()
         ];
 
@@ -82,5 +100,4 @@ class Index extends Component
             'dataBarChart' => $dataBarChart,
         ]);
     }
-
 }

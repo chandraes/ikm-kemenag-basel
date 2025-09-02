@@ -19,6 +19,12 @@
                                         <flux:select.option value="1y" label="1 Tahun Terakhir" />
                                     </flux:select>
                                 </div>
+                                <div class="mt-6">
+                                    <flux:button wire:click="openShareModal" variant="primary" color="green"
+                                        icon="qr-code">
+                                        Bagikan Survei
+                                    </flux:button>
+                                </div>
                                 <a href="{{ route('landing.full-screen') }}" target="_blank"
                                     class="mt-6 inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white font-semibold rounded-lg shadow-md hover:bg-indigo-700 transition">
                                     <flux:icon name="arrows-pointing-out" class="w-5 h-5" />
@@ -83,6 +89,40 @@
                         </div>
 
                     </div>
+
+                    @if ($isShareModalOpen)
+                    <div x-data
+                        class="fixed inset-0 z-50 flex items-center justify-center overflow-auto bg-black bg-opacity-50">
+                        <div class="relative w-full max-w-md p-6 mx-auto bg-white rounded-lg shadow-lg dark:bg-gray-900"
+                            @click.outside="$wire.closeShareModal()">
+                            <h3 class="text-xl font-bold text-gray-900 dark:text-gray-200 mb-4">Bagikan Link Survei
+                                Global</h3>
+                            <p class="text-sm text-gray-600 dark:text-gray-300 mb-4">
+                                Gunakan QR code ini untuk responden yang akan memilih sendiri unit layanannya.
+                            </p>
+
+                            {{-- Tempat untuk QR Code --}}
+                            <div class="flex justify-center items-center p-4 bg-white rounded-md">
+                                <canvas id="qrcode-canvas"></canvas>
+                            </div>
+
+                            <div class="mt-6">
+                                <a id="download-qr" href="#" download="qrcode-survei-global.png"
+                                    class="w-full flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700">
+                                    <flux:icon name="arrow-down-tray" class="w-5 h-5" />
+                                    Unduh QR Code
+                                </a>
+                            </div>
+
+                            <div class="flex justify-end mt-6">
+                                <button type="button" wire:click="closeShareModal()"
+                                    class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600">
+                                    Tutup
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    @endif
                 </div>
             </div>
         </div>
