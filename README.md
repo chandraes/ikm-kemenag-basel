@@ -1,13 +1,13 @@
 # IKM-Apps: Sistem Survei Kepuasan Masyarakat Real-Time
 
 ![Versi PHP](https://img.shields.io/badge/PHP-8.2%2B-777BB4?style=for-the-badge&logo=php)
-![Versi Laravel](https://img.shields.io/badge/Laravel-11-FF2D20?style=for-the-badge&logo=laravel)
+![Versi Laravel](https://img.shields.io/badge/Laravel-12-FF2D20?style=for-the-badge&logo=laravel)
 ![Livewire](https://img.shields.io/badge/Livewire-3-4d55b8?style=for-the-badge)
 ![Lisensi](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)
 
 **IKM-Apps** adalah aplikasi web modern yang dirancang untuk mengelola dan menganalisis **Survei Kepuasan Masyarakat (SKM)** secara digital, interaktif, dan *real-time*. Dibangun di atas TALL Stack (Tailwind, Alpine.js, Laravel, Livewire), aplikasi ini menyediakan dasbor analitik dan mode tampilan publik ("Mode TV") yang dinamis.
 
-[Gambar Screenshot Dasbor Admin]
+[Gambar Screenshot Dasbor Mode TV]
 ![Tv Mode](tv-mode.png)
 
 ## ✨ Fitur Utama
