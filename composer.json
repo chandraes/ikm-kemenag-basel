@@ -8,6 +8,12 @@
         "framework"
     ],
     "license": "MIT",
+    "authors": [
+        {
+            "name": "Chandra ES",
+            "homepage": "https://github.com/chandraes"
+        }
+    ],
     "require": {
         "php": "^8.2",
         "jantinnerezo/livewire-alert": "^4.0",
