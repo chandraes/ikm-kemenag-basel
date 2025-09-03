@@ -82,7 +82,6 @@ if (import.meta.env.VITE_REVERB_APP_KEY) {
 
     window.Echo.channel('dashboard')
         .listen('SurveySubmitted', (e) => {
-            console.log('Event SurveySubmitted diterima:', e);
             Livewire.dispatch('refreshDashboard');
         });
 } else {
