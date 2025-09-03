@@ -1,14 +1,8 @@
 <div class="flex items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900">
     <div class="w-full max-w-3xl p-4 sm:p-8 mx-auto my-12" x-data="surveyForm(getSurveyInitialData())" x-init="init()"
         @focus-on-question.window="document.getElementById($event.detail.elementId)?.scrollIntoView({ behavior: 'smooth', block: 'center' })">
-        <div x-show="isLoading" x-transition:enter="transition ease-out duration-300"
-            x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
-            x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100"
-            x-transition:leave-end="opacity-0"
-            class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" style="display: none;"
-            {{-- Mencegah FOUC (flash of unstyled content) --}}>
+        <div wire:loading class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div class="flex items-center space-x-3 text-white text-xl font-semibold">
-                {{-- Spinner SVG untuk animasi --}}
                 <svg class="animate-spin h-8 w-8 text-white" xmlns="http://www.w3.org/2000/svg" fill="none"
                     viewBox="0 0 24 24">
                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -206,8 +200,10 @@
             </div>
 
             <div class="mt-8 text-center">
-                <flux:button @click="submitStep0()" variant="primary" x-bind:disabled="isLoading">{{ __('Lanjutkan &
-                    Mulai Survei') }}</flux:button>
+                <flux:button @click="submitStep0()" variant="primary" wire:loading.attr="disabled"
+                    wire:target="mulaiSurvey">
+                    {{ __('Lanjutkan & Mulai Survei') }}
+                </flux:button>
             </div>
         </div>
         @endif
@@ -269,7 +265,9 @@
                 class="block w-full p-3 mt-6 text-center text-sm text-red-700 bg-red-100 rounded-lg">{{ $message
                 }}</span> @enderror
             <div class="mt-10 text-center">
-                <flux:button @click="submitStep1()" variant="primary" x-bind:disabled="isLoading">{{ __('Lanjutkan') }}
+                <flux:button @click="submitStep1()" variant="primary" wire:loading.attr="disabled"
+                    wire:target="simpanSurvey">
+                    {{ __('Lanjutkan') }}
                 </flux:button>
             </div>
         </div>
@@ -294,10 +292,12 @@
                 @error('kritik_saran') <span class="text-sm text-red-500 mt-1">{{ $message }}</span> @enderror
             </div>
             <div class="flex justify-center items-center mt-8 gap-4">
-                <flux:button @click="kritik_saran = ''; submitStep2()" variant="ghost" x-bind:disabled="isLoading">
+                <flux:button @click="kritik_saran = ''; submitStep2()" variant="ghost" wire:loading.attr="disabled"
+                    wire:target="finalkanSurvey">
                     {{ __('Lewati') }}
                 </flux:button>
-                <flux:button @click="submitStep2()" variant="primary" x-bind:disabled="isLoading">
+                <flux:button @click="submitStep2()" variant="primary" wire:loading.attr="disabled"
+                    wire:target="finalkanSurvey">
                     {{ __('Kirim Survei') }}
                 </flux:button>
             </div>

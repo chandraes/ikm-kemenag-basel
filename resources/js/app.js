@@ -248,7 +248,7 @@ document.addEventListener('alpine:init', () => {
     Alpine.data('surveyForm', (initialData) => ({
         // --- PROPERTI DATA ---
         langkah: 0,
-        isLoading: false,
+        // isLoading: false,
         errors: {},
         satker_id: initialData.satker_id || null,
         isSatkerLocked: initialData.isSatkerLocked || false,
@@ -285,9 +285,6 @@ document.addEventListener('alpine:init', () => {
             if(initialData.agama) { this.agama = initialData.agama; this.searchAgama = initialData.agama; }
             if(initialData.pendidikan) { this.pendidikan = initialData.pendidikan; this.searchPendidikan = initialData.pendidikan; }
             if(initialData.pekerjaan) { this.pekerjaan = initialData.pekerjaan; this.searchPekerjaan = initialData.pekerjaan; }
-
-            document.addEventListener('livewire:request', () => this.isLoading = true);
-            document.addEventListener('livewire:response', () => this.isLoading = false);
         },
 
         selectSatker(id, name) {
