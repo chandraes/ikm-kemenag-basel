@@ -244,4 +244,74 @@ document.addEventListener('alpine:init', () => {
             if (this.intervalId) { clearInterval(this.intervalId); }
         }
     }));
+
+    Alpine.data('surveyForm', (initialData) => ({
+        // --- PROPERTI DATA ---
+        langkah: 0,
+        isLoading: false,
+        errors: {},
+        satker_id: initialData.satker_id || null,
+        isSatkerLocked: initialData.isSatkerLocked || false,
+        searchSatker: initialData.searchSatker || '',
+        nama: '',
+        usia: '',
+        jenis_kelamin: null,
+        agama: '',
+        searchAgama: '',
+        pendidikan: '',
+        searchPendidikan: '',
+        pekerjaan: '',
+        searchPekerjaan: '',
+        pekerjaan_lainnya: '',
+        email: '',
+        alamat_lengkap: '',
+        keterangan_keperluan: '',
+        kritik_saran: '',
+        answers: {},
+
+        // --- DATA UNTUK DROPDOWN ---
+        satkerOptions: initialData.satkerOptions || [],
+        kuesioners: initialData.kuesioners || [],
+        agamaOptions: initialData.agamaOptions || [],
+        pendidikanOptions: initialData.pendidikanOptions || [],
+        pekerjaanOptions: initialData.pekerjaanOptions || [],
+
+        // --- METHOD ---
+        init() {
+            this.kuesioners.forEach(q => { this.answers[q.id] = null; });
+
+            // Pre-fill search fields if data already exists (e.g. from locked satker)
+            if(this.satker_id && this.searchSatker) { this.selectSatker(this.satker_id, this.searchSatker); }
+            if(initialData.agama) { this.agama = initialData.agama; this.searchAgama = initialData.agama; }
+            if(initialData.pendidikan) { this.pendidikan = initialData.pendidikan; this.searchPendidikan = initialData.pendidikan; }
+            if(initialData.pekerjaan) { this.pekerjaan = initialData.pekerjaan; this.searchPekerjaan = initialData.pekerjaan; }
+        },
+
+        selectSatker(id, name) {
+            this.satker_id = id;
+            this.searchSatker = name;
+        },
+
+        getAllData() {
+            return {
+                satker_id: this.satker_id,
+                nama: this.nama,
+                email: this.email,
+                usia: this.usia,
+                alamat_lengkap: this.alamat_lengkap,
+                keterangan_keperluan: this.keterangan_keperluan,
+                kritik_saran: this.kritik_saran,
+                jenis_kelamin: this.jenis_kelamin,
+                agama: this.agama,
+                pendidikan: this.pendidikan,
+                pekerjaan: this.pekerjaan,
+                pekerjaan_lainnya: this.pekerjaan_lainnya,
+                jawaban: this.answers
+            }
+        },
+
+        submitStep0() { this.$wire.mulaiSurvey(this.getAllData()); },
+        submitStep1() { this.$wire.simpanSurvey(this.getAllData()); },
+        submitStep2() { this.$wire.finalkanSurvey(this.getAllData()); }
+    }));
 });
