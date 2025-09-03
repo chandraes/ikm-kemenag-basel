@@ -285,6 +285,9 @@ document.addEventListener('alpine:init', () => {
             if(initialData.agama) { this.agama = initialData.agama; this.searchAgama = initialData.agama; }
             if(initialData.pendidikan) { this.pendidikan = initialData.pendidikan; this.searchPendidikan = initialData.pendidikan; }
             if(initialData.pekerjaan) { this.pekerjaan = initialData.pekerjaan; this.searchPekerjaan = initialData.pekerjaan; }
+
+            document.addEventListener('livewire:request', () => this.isLoading = true);
+            document.addEventListener('livewire:response', () => this.isLoading = false);
         },
 
         selectSatker(id, name) {
@@ -310,8 +313,12 @@ document.addEventListener('alpine:init', () => {
             }
         },
 
-        submitStep0() { this.$wire.mulaiSurvey(this.getAllData()); },
-        submitStep1() { this.$wire.simpanSurvey(this.getAllData()); },
-        submitStep2() { this.$wire.finalkanSurvey(this.getAllData()); }
+        submitStep0() {
+            this.$wire.mulaiSurvey(this.getAllData());
+        },
+        submitStep1() {
+            this.$wire.simpanSurvey(this.getAllData()); },
+        submitStep2() {
+            this.$wire.finalkanSurvey(this.getAllData()); }
     }));
 });

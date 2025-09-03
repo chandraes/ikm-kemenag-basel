@@ -127,7 +127,7 @@ class FormSurvey extends Component
 
     public function render()
     {
-        $initialData = [
+       $initialData = [
             'satker_id' => $this->satker_id,
             'isSatkerLocked' => $this->isSatkerLocked,
             'searchSatker' => $this->isSatkerLocked ? Satker::find($this->satker_id)?->nama_satker : '',
