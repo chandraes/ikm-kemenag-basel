@@ -12,6 +12,7 @@ use App\Livewire\Admin\Dashboard\SurveyDetail;
 use App\Livewire\Responden;
 use App\Livewire\Admin\Reviews\Index as ReviewsPage;
 use App\Livewire\Survey\FormSurvey;
+use App\Http\Controllers\ExportController;
 
 
 Route::get('/', LandingPage::class)->name('landing');
@@ -24,6 +25,9 @@ Route::get('/dashboard', AdminDashboard::class)
     ->name('dashboard');
 
 Route::middleware(['auth'])->group(function () {
+
+    Route::get('/exports/{export}/download', [ExportController::class, 'download'])->name('exports.download');
+
     Route::get('/surveys/{jawabanSurvey}', SurveyDetail::class)->name('admin.surveys.show');
     Route::get('/admin/reviews', ReviewsPage::class)->name('admin.reviews.index');
 

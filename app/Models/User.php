@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
+use App\Models\Export;
 
 class User extends Authenticatable
 {
@@ -57,5 +58,16 @@ class User extends Authenticatable
             ->take(2)
             ->map(fn ($word) => Str::substr($word, 0, 1))
             ->implode('');
+    }
+
+     // =======================================================
+    // TAMBAHKAN RELASI INI DI SINI
+    // =======================================================
+    /**
+     * Mendefinisikan relasi bahwa satu User bisa memiliki banyak Export.
+     */
+    public function exports()
+    {
+        return $this->hasMany(Export::class);
     }
 }
