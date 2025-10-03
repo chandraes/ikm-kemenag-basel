@@ -7,7 +7,7 @@
             <div class="flex items-center justify-between mb-6">
                 <h2 class="text-2xl font-semibold text-gray-800"></h2>
                 <flux:button wire:click="create()" variant="primary" color="indigo" size="sm">
-                    + Tambah Satker
+                    + Tambah Program
                 </flux:button>
             </div>
 
@@ -20,7 +20,7 @@
                     <form wire:submit.prevent="triggerConfirm">
                         <div>
                             <flux:input type="text" wire:model="nama_satker" id="nama_satker"
-                                :label="__('Nama Satker')"></flux:input>
+                                :label="__('Nama Program')"></flux:input>
                             @error('nama_satker') <span class="text-sm text-red-600">{{ $message }}</span> @enderror
                         </div>
                         <div class="flex justify-end mt-6 space-x-3">
@@ -106,7 +106,7 @@
                                 <th wire:click="sortingBy('nama_satker')"
                                     class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase cursor-pointer dark:text-gray-400">
                                     <div class="flex items-center gap-1.5">
-                                        <span>Nama Satker</span>
+                                        <span>Nama Program</span>
                                         @if ($sortBy === 'nama_satker')
                                         <flux:icon :name="$sortDirection === 'asc' ? 'chevron-up' : 'chevron-down'"
                                             class="w-4 h-4" />

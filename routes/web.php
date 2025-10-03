@@ -24,7 +24,7 @@ Route::get('/dashboard', AdminDashboard::class)
     ->middleware(['auth', 'verified']) // Gunakan middleware yang sama seperti sebelumnya
     ->name('dashboard');
 
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::get('/exports/{export}/download', [ExportController::class, 'download'])->name('exports.download');
 

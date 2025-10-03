@@ -19,7 +19,7 @@
                     <flux:navlist.item icon="envelope" :href="route('admin.reviews.index')" :current="request()->routeIs('admin.reviews.index')" wire:navigate>{{ __('Kritik & Saran') }}</flux:navlist.item>
                 </flux:navlist.group>
                  <flux:navlist.group :heading="__('Master Data')" class="grid">
-                    <flux:navlist.item icon="building-office-2" :href="route('master.satker')" :current="request()->routeIs('master.satker')" wire:navigate>{{ __('Satker') }}</flux:navlist.item>
+                    <flux:navlist.item icon="building-office-2" :href="route('master.satker')" :current="request()->routeIs('master.satker')" wire:navigate>{{ __('Program') }}</flux:navlist.item>
                     <flux:navlist.item icon="document-duplicate" :href="route('master.kuesioner')" :current="request()->routeIs('master.kuesioner')" wire:navigate>{{ __('Kuesioner') }}</flux:navlist.item>
                     <flux:navlist.item icon="cog" :href="route('pengaturan')" :current="request()->routeIs('pengaturan')" wire:navigate>{{ __('Pengaturan Aplikasi') }}</flux:navlist.item>
                 </flux:navlist.group>

@@ -80,7 +80,7 @@ class ManajemenSatker extends Component
             'nama_satker' => 'required|string|max:255|unique:satkers,nama_satker,' . $this->satker_id,
         ]);
 
-        $message = $this->satker_id ? 'Anda yakin ingin memperbarui satker ini?' : 'Anda yakin ingin menyimpan satker baru ini?';
+        $message = $this->satker_id ? 'Anda yakin ingin memperbarui program ini?' : 'Anda yakin ingin menyimpan program baru ini?';
 
         LivewireAlert::title($message)
             ->withConfirmButton(true)
@@ -102,7 +102,7 @@ class ManajemenSatker extends Component
 
         Satker::updateOrCreate(['id' => $this->satker_id], $validatedData);
 
-        $message = $this->satker_id ? 'Nama Satker berhasil diperbarui.' : 'Satker berhasil ditambahkan.';
+        $message = $this->satker_id ? 'Nama Program berhasil diperbarui.' : 'Program berhasil ditambahkan.';
         LivewireAlert::title($message)->success()->show();
 
         $this->closeModal();
@@ -111,7 +111,7 @@ class ManajemenSatker extends Component
 
     public function confirmDelete($id)
     {
-        LivewireAlert::title('Anda yakin ingin menghapus satker ini?')
+        LivewireAlert::title('Anda yakin ingin menghapus program ini?')
             ->text('Data yang dihapus tidak dapat dikembalikan.')
             ->withConfirmButton(true)
             ->withCancelButton(true)
@@ -127,7 +127,7 @@ class ManajemenSatker extends Component
     public function delete($payload)
     {
         Satker::find($payload['id'])->delete();
-        LivewireAlert::title('Satker berhasil dihapus.')->success()->show();
+        LivewireAlert::title('Program berhasil dihapus.')->success()->show();
     }
 
     public function openModal()
